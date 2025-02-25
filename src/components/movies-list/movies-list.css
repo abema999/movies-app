@@ -1,0 +1,8 @@
+.movies-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}

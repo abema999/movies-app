@@ -1,0 +1,43 @@
+.movie {
+  display: flex;
+  height: 280px;
+  background-color: var(--color-light);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+}
+.movie__img {
+  width: 180px;
+  height: 100%;
+  object-fit: cover;
+}
+.movie__info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 20px;
+}
+.movie__title {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+}
+.movie__release {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+}
+.movie__genres {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.movie__genre {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+}
+.movie__overview {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+}
