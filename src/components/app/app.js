@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spin, Alert } from 'antd';
 
 import './app.css';
 import TMDBService from '../../services/tmdb-service';
@@ -9,6 +10,8 @@ export default class App extends React.Component {
   state = {
     movies: [],
     query: 'return',
+    loading: true,
+    error: false,
   };
 
   constructor() {
@@ -47,17 +50,47 @@ export default class App extends React.Component {
     const movies = new TMDBService();
     const { query } = this.state;
 
-    movies.getMovies(query).then((movies) => {
-      movies.results.forEach((movie) => {
-        this.addMovieCard(movie);
-      });
-    });
+    movies
+      .getMovies(query)
+      .then((movies) => {
+        this.setState({
+          loading: false,
+        });
+        movies.results.forEach((movie) => {
+          this.addMovieCard(movie);
+        });
+      })
+      .catch(this.onError);
   }
 
+  onError = () => {
+    this.setState({ error: true, loading: false });
+  };
+
   render() {
+    const { movies, loading, error } = this.state;
+
+    const successResponse = !(loading || error);
+    const alert = (
+      <div className="alert-wrapper">
+        <Alert
+          className="alert"
+          type="error"
+          message="Ошибка!"
+          description="Что-то пошло не так"
+          showIcon
+        ></Alert>
+      </div>
+    );
+    const errorMessage = error ? alert : null;
+    const spinner = loading ? <Spin className="spinner"></Spin> : null;
+    const content = successResponse ? <MoviesList movies={movies}></MoviesList> : null;
+
     return (
       <div className="container">
-        <MoviesList movies={this.state.movies}></MoviesList>
+        {errorMessage}
+        {spinner}
+        {content}
       </div>
     );
   }

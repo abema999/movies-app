@@ -3,3 +3,21 @@
   margin: 0 auto;
   padding: 32px;
 }
+
+.alert-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.alert {
+  min-width: 400px;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}

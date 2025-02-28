@@ -49,3 +49,13 @@ img {
   box-shadow: none;
   cursor: pointer;
 }
+.alert-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.alert {
+  min-width: 400px;
+}
