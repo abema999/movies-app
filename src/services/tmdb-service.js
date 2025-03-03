@@ -24,7 +24,7 @@ export default class TMDBService {
     }
   }
 
-  async getMovies(query) {
-    return await this.getResource(`/search/movie?query=${query}`);
+  async getMovies(query, pageNumber) {
+    return await this.getResource(`/search/movie?query=${query}&page=${pageNumber}`);
   }
 }

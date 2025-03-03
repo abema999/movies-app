@@ -6,6 +6,9 @@ import './movie-card.css';
 
 export default class MovieCard extends React.Component {
   getTrimOverview = (overview, length) => {
+    if (!overview) {
+      return 'Описание отсутствует';
+    }
     if (overview.length <= length) {
       return overview;
     }
@@ -26,7 +29,7 @@ export default class MovieCard extends React.Component {
               {title}
             </Title>
             <Text className="movie__release" type="secondary">
-              {release && format(new Date(release), 'MMMM d, y')}
+              {release ? format(new Date(release), 'MMMM d, y') : 'Дата неизвестна'}
             </Text>
             <ul className="movie__genres">
               <li className="movie__genre">

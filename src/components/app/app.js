@@ -1,22 +1,30 @@
 import React from 'react';
-import { Spin, Alert } from 'antd';
+import { Spin, Alert, Pagination } from 'antd';
 
 import './app.css';
 import TMDBService from '../../services/tmdb-service';
+import Search from '../search/search';
 import MoviesList from '../movies-list/movies-list';
 import noAvailable from '../../img/no-available.svg';
 
 export default class App extends React.Component {
   state = {
     movies: [],
-    query: 'return',
+    query: '',
     loading: true,
     error: false,
+    noData: false,
+    pageNumber: 1,
+    totalPages: null,
+    isSearch: false,
   };
 
-  constructor() {
-    super();
-    this.searchMovies();
+  componentDidMount() {
+    if (this.state.query) {
+      this.searchMovies();
+    } else {
+      this.setState({ loading: false });
+    }
   }
 
   createMovieCard = (movie) => {
@@ -47,15 +55,27 @@ export default class App extends React.Component {
   };
 
   searchMovies() {
-    const movies = new TMDBService();
-    const { query } = this.state;
+    const data = new TMDBService();
+    const { query, pageNumber } = this.state;
+    this.setState({
+      movies: [],
+      loading: true,
+      error: false,
+      noData: false,
+      totalPages: null,
+    });
 
-    movies
-      .getMovies(query)
+    data
+      .getMovies(query, pageNumber)
       .then((movies) => {
         this.setState({
           loading: false,
+          pageNumber: pageNumber,
+          totalPages: movies.total_pages * 10,
         });
+        if (movies.results.length === 0) {
+          this.setState({ noData: true });
+        }
         movies.results.forEach((movie) => {
           this.addMovieCard(movie);
         });
@@ -63,15 +83,26 @@ export default class App extends React.Component {
       .catch(this.onError);
   }
 
+  onSearch = (query) => {
+    this.setState({ query: query, pageNumber: 1, isSearch: true }, () => {
+      this.searchMovies();
+    });
+  };
+
+  onChange = (number) => {
+    this.setState({ pageNumber: number }, () => {
+      this.searchMovies();
+    });
+  };
+
   onError = () => {
-    this.setState({ error: true, loading: false });
+    this.setState({ error: true, loading: false, noData: false });
   };
 
   render() {
-    const { movies, loading, error } = this.state;
-
-    const successResponse = !(loading || error);
-    const alert = (
+    const { movies, query, loading, error, noData, pageNumber, totalPages, isSearch } = this.state;
+    const successResponse = !(loading || error || noData);
+    const errorAlert = (
       <div className="alert-wrapper">
         <Alert
           className="alert"
@@ -82,15 +113,38 @@ export default class App extends React.Component {
         ></Alert>
       </div>
     );
-    const errorMessage = error ? alert : null;
+    const noDataAlert = (
+      <div className="alert-wrapper">
+        <Alert
+          className="alert"
+          type="info"
+          message="Нет данных!"
+          description="Поиск не дал результатов"
+          showIcon
+        ></Alert>
+      </div>
+    );
+    const errorMessage = error ? errorAlert : null;
     const spinner = loading ? <Spin className="spinner"></Spin> : null;
-    const content = successResponse ? <MoviesList movies={movies}></MoviesList> : null;
+    const content = isSearch && noData && query ? noDataAlert : <MoviesList movies={movies} />;
+    const pagination =
+      successResponse && totalPages > 0 ? (
+        <Pagination
+          className="pagination"
+          current={pageNumber}
+          total={totalPages}
+          onChange={this.onChange}
+          showSizeChanger={false}
+        ></Pagination>
+      ) : null;
 
     return (
       <div className="container">
+        <Search onSearch={this.onSearch}></Search>
         {errorMessage}
         {spinner}
         {content}
+        {pagination}
       </div>
     );
   }
