@@ -27,7 +27,6 @@ img {
   max-width: 100%;
   height: auto;
 }
-
 :root {
   --color-light: #ffffff;
   --color-dark: #000000;
@@ -55,7 +54,6 @@ img {
   justify-content: center;
   height: 100vh;
 }
-
 .alert {
   min-width: 400px;
 }

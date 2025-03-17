@@ -3,27 +3,33 @@
   margin: 0 auto;
   padding: 36px;
 }
-
 .alert-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
 }
-
 .alert {
   min-width: 400px;
 }
-
 .spinner {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
 }
-
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+@media (max-width: 1009.98px) {
+  .container {
+    max-width: 523px;
+  }
+}
+@media (max-width: 575.98px) {
+  .container {
+    padding: 16px;
+  }
 }

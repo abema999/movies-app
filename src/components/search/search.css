@@ -3,3 +3,8 @@
   padding: 9px 12px;
   border-radius: 4px;
 }
+@media (max-width: 575.98px) {
+  .search {
+    margin-bottom: 16px;
+  }
+}

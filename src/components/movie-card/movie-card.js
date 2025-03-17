@@ -4,6 +4,7 @@ import { Tag, Typography, Rate } from 'antd';
 
 import './movie-card.css';
 import TMDBService from '../../services/tmdb-service';
+import { GenresConsumer } from '../genres-context/genres-context';
 
 export default class MovieCard extends React.Component {
   data = new TMDBService();
@@ -19,7 +20,7 @@ export default class MovieCard extends React.Component {
   };
 
   render() {
-    const { guestId, addRateMovie, removeRateMovie, genres } = this.props;
+    const { guestId, addRateMovie, removeRateMovie } = this.props;
     const { Title, Text } = Typography;
     const movieCard = this.props.movies.map((movie) => {
       const { id, title, release, overview, poster, genreIds, voteAverage, rating } = movie;
@@ -45,9 +46,6 @@ export default class MovieCard extends React.Component {
           addRateMovie(id, score);
         }
       };
-
-      const movieGenres = genres.filter((item) => genreIds.includes(item.id));
-
       return (
         <li className="movie" key={id}>
           <img className="movie__img" src={poster}></img>
@@ -61,17 +59,24 @@ export default class MovieCard extends React.Component {
             <Text className="movie__release" type="secondary">
               {release ? format(new Date(release), 'MMMM d, y') : 'Дата неизвестна'}
             </Text>
-            <ul className="movie__genres">
-              {movieGenres.map((movieGenre) => {
+            <GenresConsumer>
+              {({ genres }) => {
+                const movieGenres = genres.filter((item) => genreIds.includes(item.id));
                 return (
-                  <li className="movie__genre" key={movieGenre.id}>
-                    <Tag>
-                      <span>{movieGenre.name}</span>
-                    </Tag>
-                  </li>
+                  <ul className="movie__genres">
+                    {movieGenres.map((movieGenre) => {
+                      return (
+                        <li className="movie__genre" key={movieGenre.id}>
+                          <Tag>
+                            <span>{movieGenre.name}</span>
+                          </Tag>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 );
-              })}
-            </ul>
+              }}
+            </GenresConsumer>
             <Text className="movie__overview">{trimOverview}</Text>
             <div className="movie__rating">
               <Rate defaultValue={rating} allowHalf count={10} onChange={changeScore}></Rate>
