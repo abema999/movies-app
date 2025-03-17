@@ -1,10 +1,13 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { Tag, Typography } from 'antd';
+import { Tag, Typography, Rate } from 'antd';
 
 import './movie-card.css';
+import TMDBService from '../../services/tmdb-service';
 
 export default class MovieCard extends React.Component {
+  data = new TMDBService();
+
   getTrimOverview = (overview, length) => {
     if (!overview) {
       return 'Описание отсутствует';
@@ -16,30 +19,63 @@ export default class MovieCard extends React.Component {
   };
 
   render() {
+    const { guestId, addRateMovie, removeRateMovie, genres } = this.props;
     const { Title, Text } = Typography;
     const movieCard = this.props.movies.map((movie) => {
-      const { id, title, release, overview, poster } = movie;
+      const { id, title, release, overview, poster, genreIds, voteAverage, rating } = movie;
       const trimOverview = this.getTrimOverview(overview, 100);
+
+      let voteAverageClass = 'movie__vote-average';
+      if (voteAverage < 3) {
+        voteAverageClass += ' red';
+      } else if (voteAverage < 5) {
+        voteAverageClass += ' orange';
+      } else if (voteAverage < 7) {
+        voteAverageClass += ' yellow';
+      } else if (voteAverage >= 7) {
+        voteAverageClass += ' green';
+      }
+
+      const changeScore = (score) => {
+        if (score === 0) {
+          this.data.removeMovieRating(id, guestId);
+          removeRateMovie(id);
+        } else {
+          this.data.addMovieRating(id, guestId, score);
+          addRateMovie(id, score);
+        }
+      };
+
+      const movieGenres = genres.filter((item) => genreIds.includes(item.id));
 
       return (
         <li className="movie" key={id}>
           <img className="movie__img" src={poster}></img>
           <div className="movie__info">
-            <Title className="movie__title" style={{ margin: 0 }} level={4}>
-              {title}
-            </Title>
+            <div className="movie__header">
+              <Title className="movie__title" style={{ margin: 0 }} level={4}>
+                {title}
+              </Title>
+              <div className={voteAverageClass}>{voteAverage}</div>
+            </div>
             <Text className="movie__release" type="secondary">
               {release ? format(new Date(release), 'MMMM d, y') : 'Дата неизвестна'}
             </Text>
             <ul className="movie__genres">
-              <li className="movie__genre">
-                <Tag>#</Tag>
-              </li>
-              <li className="movie__genre">
-                <Tag>#</Tag>
-              </li>
+              {movieGenres.map((movieGenre) => {
+                return (
+                  <li className="movie__genre" key={movieGenre.id}>
+                    <Tag>
+                      <span>{movieGenre.name}</span>
+                    </Tag>
+                  </li>
+                );
+              })}
             </ul>
             <Text className="movie__overview">{trimOverview}</Text>
+            <div className="movie__rating">
+              <Rate defaultValue={rating} allowHalf count={10} onChange={changeScore}></Rate>
+            </div>
           </div>
         </li>
       );
